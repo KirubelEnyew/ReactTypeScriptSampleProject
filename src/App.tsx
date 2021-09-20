@@ -1,26 +1,27 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Home from './Components/home';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import NavigationBar from './Components/nav';
+import useStyle from './Components/styling';
+import Add from './Components/add';
+import Edit from './Components/edit';
 
 function App() {
+  const classes = useStyle()
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+      <BrowserRouter>
+      <div className={classes.root}>
+      <div className={classes.toolbar}>
+        <NavigationBar/>
+      <Switch>
+        <Route path = '/pizzas-page' component = {Home} />
+        <Route path = '/add-pizza' component = {Add}/>
+        <Route path = '/edit-pizza' component = {Edit} />
+      </Switch>
+      </div>
+      </div>
+      </BrowserRouter>
+    );
 }
 
 export default App;
