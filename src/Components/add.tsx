@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { RouteComponentProps, withRouter } from 'react-router';
 import axios from 'axios';
+import { useMutation, useQueryClient } from 'react-query';
 interface Data {
     pizzaName : string
     ingredients : string
@@ -20,17 +21,16 @@ const Add : React.FC<RouteComponentProps> = ({history}) => {
             pizzaName : pizzaName,
             ingredients : ingredients
         }
-        const res = await axios.post(url,formData)
-        console.log(res.status);
-        if(res.status === 200){
-            history.push('/pizzas-page')
-        }else{
-            alert("Failed to Add pizza")
-            history.go(0)
-        }
+        return await axios.post(url,formData)
+        
     }
+    const queryClient = useQueryClient()
+    const mutation = useMutation(formSubmit,{
+        onSuccess : ()=>{queryClient.invalidateQueries('Pizzas')}
+    })
     return (
         <div className={classes.root}>
+            {mutation.isSuccess?history.push('/pizzas-page'):null}
             <Container>
                 <Box display='flex' justifyContent='center' paddingY={2}>
                 <Typography variant='h5'>Add a Pizza</Typography>
@@ -38,7 +38,7 @@ const Add : React.FC<RouteComponentProps> = ({history}) => {
                 <Grid className={classes.grid} container>
                     <Grid item lg={6} md={8} xs={12}>
                         <Paper>
-                        <form onSubmit={formSubmit}>
+                        <form onSubmit={mutation.mutateAsync}>
                             <Box display='flex' flexDirection='column'>
                                 <TextField className={classes.defaultMargin} type='text' variant="outlined" name="pizzaName" required label="Pizza Name" onChange={(e)=>{setName(e.target.value)}} value={pizzaName}/>
                                 <TextField className={classes.defaultMargin} type='text' variant="outlined" required label="Insert Ingredients" onChange={(e)=>{setIngredients(e.target.value)}} value={ingredients}/>

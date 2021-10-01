@@ -11,7 +11,7 @@ const NavigationBar = () => {
             <AppBar position='static' className={classes.appBar}>
                 <Toolbar>
                     <Link to='/pizzas-page' className={classes.links}>
-                        <IconButton className={classes.homebtn}>
+                        <IconButton className={classes.addBtn}>
                             <Home/>
                         </IconButton>
                     </Link>

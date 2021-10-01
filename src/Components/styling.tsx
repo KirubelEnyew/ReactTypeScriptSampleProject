@@ -4,10 +4,18 @@ const useStyle = makeStyles((theme) => ({
     root: {
         flexGrow: 1
     },
+    linearProgressRoot : {
+        width : '100%',
+        '& > * + *': {
+            marginTop: theme.spacing(2),
+          },
+    },
     CardActions: {
         display: 'flex',
-        width: '100%',
         justifyContent: 'center',
+    },
+    gridBox : {
+        overflow : 'auto'
     },
     appBar: {
         backgroundColor: 'grey'
@@ -18,7 +26,7 @@ const useStyle = makeStyles((theme) => ({
         color: 'white',
         '&:hover': {
             color: 'black',
-            backgroundColor: 'green'
+            backgroundColor: 'darkgreen'
         }
     },
     addBtn: {
@@ -32,7 +40,7 @@ const useStyle = makeStyles((theme) => ({
     toolbar: theme.mixins.toolbar,
     grid: {
         display: 'flex',
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
     links: {
         textDecoration: 'none'

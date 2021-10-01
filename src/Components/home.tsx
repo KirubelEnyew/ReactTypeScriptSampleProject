@@ -1,44 +1,46 @@
-import { Box, Button, Card, CardActions, CardContent, Container, Grid, Typography } from '@material-ui/core';
+import { Box, Button, Card, CardActions, CardContent, Container, Grid, LinearProgress, Typography } from '@material-ui/core';
 import axios from 'axios';
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useQuery, useQueryClient } from 'react-query';
+import { useDispatch } from 'react-redux'
 import { withRouter, RouteComponentProps } from 'react-router';
+import { editPizzas } from '../Slices/slice'
 import useStyle from './styling';
-interface Data {
-    id: Number
-    pizzaName: String
-    ingredients: String
+import { useMutation } from 'react-query';
+
+const url = 'http://localhost/Ciproject/index.php/RESTAPI/RestController/pizza'
+const fetchFunction = async () => {
+    const res = await axios.get(url)
+    return res.data.data
 }
+
 const Home: React.FC<RouteComponentProps> = ({ history }) => {
-    const url = "http://localhost/Ciproject/index.php/RESTAPI/RestController/pizza"
     const classes = useStyle()
-    const [data, setData] = useState<Array<Data>>([])
-    useEffect(() => {
-        dataSetter()
-    }, [])
+    const dispatcher = useDispatch()
     const deletePizza = async (id: any) => {
-        const res = await axios.delete(url + `/${id}`)
-        if (res.status === 200) {
-            history.go(0)
-        } else {
-            alert("Deletion failed")
-            history.go(0)
-        }
+        return await axios.delete(url + `/${id}`)
     }
-    const dataSetter = async () => {
-        const res = await axios.get(url)
-        console.log(res.data);
-        setData(res.data.data)
-    }
+    const queryClient = useQueryClient()
+    const { data,status } = useQuery('Pizzas',fetchFunction,{
+        staleTime : 300000
+    }) 
+    const mutation = useMutation(deletePizza, {
+        onSuccess : ()=> { queryClient.invalidateQueries('Pizzas') }
+    })
     return (
         <div className={classes.root}>
             <Container>
+                {status === 'loading'? 
+                <div className = {classes.linearProgressRoot}>
+                <LinearProgress/> 
+                </div>
+                :
                 <Grid container className={classes.grid}>
                     <Grid item lg={12} md={6} sm={2}>
                         <Box display='flex' justifyContent='center'>
                             <Typography variant='h4' >The Pizzas</Typography>
                         </Box>
-                        <Box display='flex' flexDirection='row'>
+                        <Box display='flex' flexDirection='row' className={classes.gridBox}>
                             {data.map((values: { id: any, pizzaName: String | undefined, ingredients: String | undefined }) => (
                                 <Card key={values.id} className={classes.card}>
                                     <CardContent>
@@ -46,14 +48,14 @@ const Home: React.FC<RouteComponentProps> = ({ history }) => {
                                         <Typography variant='h6'>{values.ingredients}</Typography>
                                     </CardContent>
                                     <CardActions className={classes.CardActions}>
-                                        <Button className={classes.cardButtons} onClick={() => deletePizza(values.id)}>Remove</Button>
-                                        <Button className={classes.cardButtons} onClick={() => { const editData = { id: values.id, pizzaName: values.pizzaName, ingredients: values.ingredients }; history.push({ pathname: '/edit-pizza', state: { editData } }) }}>Edit</Button>
+                                        <Button className={classes.cardButtons} onClick={() => {mutation.mutateAsync(values.id)}}>Remove</Button>
+                                        <Button className={classes.cardButtons} onClick={() => { dispatcher(editPizzas(values)); history.push('/edit-pizza') }}>Edit</Button>
                                     </CardActions>
                                 </Card>
                             ))}
                         </Box>
                     </Grid>
-                </Grid>
+                </Grid>}
             </Container>
         </div>
     );

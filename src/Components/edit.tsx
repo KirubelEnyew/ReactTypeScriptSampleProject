@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { Link, } from 'react-router-dom';
 import { withRouter } from 'react-router';
 import axios from 'axios';
+import { RootStateOrAny, useSelector } from 'react-redux';
 interface Data {
     id: Number
     pizzaName: string
@@ -13,18 +14,15 @@ interface Data {
 const Edit: React.FC<any> = ({ history }) => {
     const classes = useStyle()
     const url = "http://localhost/Ciproject/index.php/RESTAPI/RestController/pizza"
-    const [id, setId] = useState<Number>();
+    const pizzaState = useSelector((state : RootStateOrAny) => state.pizza)
     const [pizzaName, setName] = useState<Data["pizzaName"]>("")
     const [ingredients, setIngredients] = useState<Data["ingredients"]>("")
     useEffect(() => {
-        handleEditData()
+        handleEditDate()
     }, [])
-    const handleEditData = async() => {
-        console.log(history.location.state);
-        const PizzaData : any = history.location.state.editData;
-        setId(PizzaData.id);
-        setIngredients(PizzaData.ingredients)
-        setName(PizzaData.pizzaName)
+    const handleEditDate = async() => {
+        setName(pizzaState.pizzaToEdit.pizzaName)
+        setIngredients(pizzaState.pizzaToEdit.ingredients)
     }
     const formSubmit = async (e : React.ChangeEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -32,7 +30,7 @@ const Edit: React.FC<any> = ({ history }) => {
             pizzaName : pizzaName,
             ingredients : ingredients
         }
-        const res = await axios.put(url+`/${id}`,formData);
+        const res = await axios.put(url+`/${pizzaState.pizzaToEdit.id}`,formData);
         if(res.status === 200){
             history.push('/pizzas-page')
         }else{
