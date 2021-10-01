@@ -5,7 +5,6 @@ import NavigationBar from './Components/nav';
 import useStyle from './Components/styling';
 import Add from './Components/add';
 import Edit from './Components/edit';
-import Generic from './Components/genericRoute';
 function App() {
   const classes = useStyle()
   return (
@@ -15,7 +14,6 @@ function App() {
         <NavigationBar/>
       <Switch>
         <Route path = '/pizzas-page' component = {Home} />
-        <Route path = '/gen' component = {Generic} />
         <Route path = '/add-pizza' component = {Add}/>
         <Route path = '/edit-pizza' component = {Edit} />
       </Switch>
