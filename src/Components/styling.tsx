@@ -42,6 +42,9 @@ const useStyle = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: 'center',
     },
+    homeGrid: {
+        display: 'flex',
+    },
     links: {
         textDecoration: 'none'
     },

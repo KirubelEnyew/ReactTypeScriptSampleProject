@@ -36,10 +36,10 @@ const Home: React.FC<RouteComponentProps> = ({ history }) => {
                 </div>
                 :
                 <Grid container className={classes.grid}>
-                    <Grid item lg={12} md={6} sm={2}>
-                        <Box display='flex' justifyContent='center'>
+                    <Box display='flex' justifyContent='center'>
                             <Typography variant='h4' >The Pizzas</Typography>
-                        </Box>
+                    </Box>
+                    <Grid item lg={12} md={6} sm={2} className={classes.homeGrid}>
                         <Box display='flex' flexDirection='row' className={classes.gridBox}>
                             {data.map((values: { id: any, pizzaName: String | undefined, ingredients: String | undefined }) => (
                                 <Card key={values.id} className={classes.card}>
