@@ -4,17 +4,18 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import NavigationBar from './Components/nav';
 import useStyle from './Components/styling';
 import { LinearProgress } from '@material-ui/core';
-import Add from './Components/add';
-import Edit from './Components/edit';
-// const Add = React.lazy(() => import('./Components/add'))
-// const Edit = React.lazy(() => import('./Components/edit'))
+// import Add from './Components/add';
+// import Edit from './Components/edit';
+const Add = React.lazy(() => import('./Components/add'))
+const Edit = React.lazy(() => import('./Components/edit'))
 function App() {
   const classes = useStyle()
   return (
     <BrowserRouter>
       <Suspense fallback={
         <div className={classes.linearProgressRoot}>
-          <LinearProgress />
+          <NavigationBar/>
+          <LinearProgress/>
         </div>
       }>
         <div className={classes.root}>
