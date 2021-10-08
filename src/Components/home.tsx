@@ -7,13 +7,25 @@ import { withRouter, RouteComponentProps } from 'react-router';
 import { editPizzas } from '../Slices/slice'
 import useStyle from './styling';
 import { useMutation } from 'react-query';
-
-const url = 'http://localhost/Ciproject/index.php/RESTAPI/RestController/pizza'
-const fetchFunction = async () => {
-    const res = await axios.get(url)
-    return res.data.data
+interface Response {
+    status : number,
+    message : string,
+    data : Array<object>
 }
-
+interface pizzaTypes {
+    id : any,
+    pizzaName : String,
+    ingredients : String
+}
+export const url = 'http://localhost/Ciproject/index.php/RESTAPI/RestController/pizza'
+const fetchFunction = async () => {
+    const res : any = await axios.get<Response>(url)
+    const pizzas : Array<pizzaTypes> = res.data.data
+    return pizzas;
+}
+export const fetcher = async () => {
+    return await axios.get(url)
+}
 const Home: React.FC<RouteComponentProps> = ({ history }) => {
     const classes = useStyle()
     const dispatcher = useDispatch()
@@ -21,41 +33,50 @@ const Home: React.FC<RouteComponentProps> = ({ history }) => {
         return await axios.delete(url + `/${id}`)
     }
     const queryClient = useQueryClient()
-    const { data,status } = useQuery('Pizzas',fetchFunction,{
-        staleTime : 300000
-    }) 
+    const { data, status } = useQuery('Pizzas', fetchFunction, {
+        staleTime: 300000
+    })
     const mutation = useMutation(deletePizza, {
-        onSuccess : ()=> { queryClient.invalidateQueries('Pizzas') }
+        onSuccess: () => { queryClient.invalidateQueries('Pizzas') }
     })
     return (
         <div className={classes.root}>
-            <Container>
-                {status === 'loading'? 
-                <div className = {classes.linearProgressRoot}>
-                <LinearProgress/> 
-                </div>
-                :
-                <Grid container className={classes.grid}>
-                    <Box display='flex' justifyContent='center'>
-                            <Typography variant='h4' >The Pizzas</Typography>
-                    </Box>
-                    <Grid item lg={12} md={6} sm={2} className={classes.homeGrid}>
-                        <Box display='flex' flexDirection='row' className={classes.gridBox}>
-                            {data.map((values: { id: any, pizzaName: String | undefined, ingredients: String | undefined }) => (
-                                <Card key={values.id} className={classes.card}>
-                                    <CardContent>
-                                        <Typography variant='h5'>{values.pizzaName}</Typography>
-                                        <Typography variant='h6'>{values.ingredients}</Typography>
-                                    </CardContent>
-                                    <CardActions className={classes.CardActions}>
-                                        <Button className={classes.cardButtons} onClick={() => {mutation.mutateAsync(values.id)}}>Remove</Button>
-                                        <Button className={classes.cardButtons} onClick={() => { dispatcher(editPizzas(values)); history.push('/edit-pizza') }}>Edit</Button>
-                                    </CardActions>
-                                </Card>
-                            ))}
-                        </Box>
-                    </Grid>
-                </Grid>}
+            <Container maxWidth='xl'>
+                {status === 'loading' ?
+                    <div className={classes.linearProgressRoot}>
+                        <LinearProgress />
+                    </div>
+                    :
+                    <>
+                        <Grid container className={classes.grid}>
+                            <Grid item xl={12} lg={10} md={8} sm={6} xs={4}>
+                                {data === undefined? 
+                                <Box display = 'flex' justifyContent='center'>
+                                <Typography variant="h4">...NoData Found,Try Again Later</Typography>
+                                </Box> :
+                                <div>
+                                <Box display='flex' justifyContent='center'>
+                                    <Typography variant='h4' >The Pizzas</Typography>
+                                </Box>
+                                <Box display='flex' className={classes.gridBox}>   
+                                    {data.map((values) => (
+                                        <Card key={values.id} className={classes.card}>
+                                            <CardContent className={classes.cardContent}>
+                                                <Typography variant='h6'>{values.pizzaName}</Typography>
+                                                <Typography variant='subtitle1'>{values.ingredients}</Typography>
+                                            </CardContent>
+                                            <CardActions className={classes.CardActions}>
+                                                <Button className={classes.cardButtons} onClick={() => { mutation.mutateAsync(values.id) }}>Remove</Button>
+                                                <Button className={classes.cardButtons} onClick={() => { dispatcher(editPizzas(values)); history.push('/edit-pizza') }}>Edit</Button>
+                                            </CardActions>
+                                        </Card>
+                                    ))}
+                                </Box>    
+                                </div>
+                                }
+                            </Grid>
+                        </Grid>
+                    </>}
             </Container>
         </div>
     );

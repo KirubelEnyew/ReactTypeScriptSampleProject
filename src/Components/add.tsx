@@ -40,8 +40,8 @@ const Add : React.FC<RouteComponentProps> = ({history}) => {
                         <Paper>
                         <form onSubmit={mutation.mutateAsync}>
                             <Box display='flex' flexDirection='column'>
-                                <TextField className={classes.defaultMargin} type='text' variant="outlined" name="pizzaName" required label="Pizza Name" onChange={(e)=>{setName(e.target.value)}} value={pizzaName}/>
-                                <TextField className={classes.defaultMargin} type='text' variant="outlined" required label="Insert Ingredients" onChange={(e)=>{setIngredients(e.target.value)}} value={ingredients}/>
+                                <TextField className={classes.defaultMargin} data-testid='Pizza Name' placeholder='Enter Pizza Name' type='text' variant="outlined" name="pizzaName" required label="Pizza Name" onChange={(e)=>{setName(e.target.value)}} value={pizzaName}/>
+                                <TextField className={classes.defaultMargin} placeholder='Enter Ingredients' type='text' variant="outlined" required label="Insert Ingredients" onChange={(e)=>{setIngredients(e.target.value)}} value={ingredients}/>
                                 <Box display='inline-flex' justifyContent='center' className={classes.defaultMargin} >
                                     <Button type='submit' className={classes.homebtn}>Confirm</Button>
                                     <Link to='/pizzas-page' className={classes.links}>
